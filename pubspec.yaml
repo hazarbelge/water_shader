@@ -1,0 +1,69 @@
+name: water_shader
+description: "Real-time water simulation shader in Flutter"
+
+module:
+  androidPackage: com.hazarbelge.water_shader
+  iosBundleIdentifier: com.hazarbelge.water_shader
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  flutter: "3.16.2"
+  sdk: '>=3.2.2 <4.0.0'
+
+dependencies:
+  another_flushbar: ^1.12.30
+  cached_network_image: ^3.3.0
+  cupertino_icons: ^1.0.6
+  device_info_plus: ^9.1.1
+  dio: ^5.4.0
+  equatable: ^2.0.5
+
+  #flutter
+  flutter:
+    sdk: flutter
+  flutter_html: ^3.0.0-beta.2
+  flutter_keyboard_visibility: ^5.4.1
+  flutter_localizations:
+    sdk: flutter
+  flutter_svg: ^2.0.9
+
+  #get
+  get: ^4.6.6
+  get_storage: ^2.1.1
+
+  google_fonts: ^6.1.0
+  jiffy: ^6.2.1
+  package_info_plus: ^5.0.1
+  path_provider: ^2.1.1
+  permission_handler: ^11.1.0
+  responsive_framework: ^0.2.0
+  url_launcher: ^6.2.2
+  url_strategy: ^0.2.0
+  video_player: ^2.8.1
+  webview_flutter: ^4.4.2
+
+dev_dependencies:
+  flutter_launcher_icons: ^0.13.1
+  flutter_lints: ^3.0.1
+  flutter_native_splash: ^2.3.8
+  flutter_test:
+    sdk: flutter
+
+flutter_launcher_icons:
+  ios: true
+  android: true
+  image_path_ios: "assets/launcher/app_icon.png"
+  image_path_android: "assets/launcher/app_icon.png"
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+    - assets/app/
+    - assets/launcher/
+    - assets/view_tab/
+    - assets/shader_tab/
+
