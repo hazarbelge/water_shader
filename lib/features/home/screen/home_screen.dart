@@ -11,7 +11,7 @@ class HomeScreen extends GetView<HomeController> {
   const HomeScreen({super.key});
 
   Color _getTabIconColor(BottomNavigationIndexRoutes _route) {
-    return BottomNavigationIndexRoutes.values[controller.bottomNavigationIndex.value] == _route ? ThemeColors.secondaryColor.withOpacity(0.2) : ThemeColors.secondaryColor;
+    return BottomNavigationIndexRoutes.values[controller.bottomNavigationIndex.value] == _route ? ThemeColors.secondaryColor : ThemeColors.secondaryColor.withOpacity(0.2);
   }
 
   @override
@@ -51,7 +51,7 @@ class HomeScreen extends GetView<HomeController> {
                   BottomNavigationBarItem(
                     icon: SvgPicture.asset(
                       Assets.viewTabViewTabIcon,
-                      colorFilter: ColorFilter.mode(_getTabIconColor(BottomNavigationIndexRoutes.SHADER_TAB), BlendMode.srcIn),
+                      colorFilter: ColorFilter.mode(_getTabIconColor(BottomNavigationIndexRoutes.VIEW_TAB), BlendMode.srcIn),
                       height: _iconSize,
                       width: _iconSize,
                     ),
