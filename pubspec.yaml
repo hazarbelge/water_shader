@@ -70,4 +70,4 @@ flutter:
     - assets/shader_tab/
   shaders:
     - shaders/water.glsl
-    - shaders/snow.glsl
+    - shaders/water_beach.glsl

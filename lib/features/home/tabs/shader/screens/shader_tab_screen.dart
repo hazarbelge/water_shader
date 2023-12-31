@@ -76,131 +76,10 @@ class ShaderTabBody extends GetView<ShaderTabController> {
     final double _width = MediaQuery.of(context).size.width;
     final double _height = MediaQuery.of(context).size.height;
 
-    final RxInt shaderIndex = RxInt(0);
-
     return SizedBox(
       height: _height,
       width: _width,
-      child: Stack(
-        children: <Widget>[
-          SizedBox(
-            height: _height,
-            width: _width,
-            child: Obx(
-              () {
-                switch (shaderIndex.value) {
-                  case 0:
-                    return const Snow();
-                  case 1:
-                    return const Water();
-                  default:
-                    return const Snow();
-                }
-              },
-            ),
-          ),
-          Positioned(
-            bottom: 30,
-            right: 20,
-            child: Container(
-              height: 60,
-              width: 120,
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(Radius.circular(30)),
-                color: Colors.black.withOpacity(0.8),
-              ),
-              child: Center(
-                child: Obx(
-                  () => CustomElevatedButton(
-                    key: const Key("shader_tab_body_button"),
-                    colors: const <Color>[Colors.transparent],
-                    paddings: EdgeInsets.zero,
-                    onPressed: () => shaderIndex.value = shaderIndex.value == 0 ? 1 : 0,
-                    child: Icon(
-                      shaderIndex.value == 0 ? Icons.water : Icons.ac_unit,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class Snow extends StatefulWidget {
-  const Snow({super.key});
-
-  static PageRoute<void> route() {
-    return MaterialPageRoute<void>(
-      builder: (_) => const Snow(),
-    );
-  }
-
-  @override
-  State<Snow> createState() => _SnowState();
-}
-
-class _SnowState extends State<Snow> {
-  double time = 0;
-
-  Timer? timer;
-
-  @override
-  void initState() {
-    super.initState();
-
-    timer = Timer.periodic(const Duration(milliseconds: 16), (Timer timer) {
-      setState(() {
-        time += 0.016;
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    timer?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ShaderBuilder(
-      assetKey: Shaders.shadersSnow,
-      (BuildContext context, ui.FragmentShader shader, Widget? child) {
-        return AnimatedSampler(
-          (ui.Image image, ui.Size size, ui.Canvas canvas) {
-            final double devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
-            shader
-              ..setFloat(0, image.width.toDouble() / devicePixelRatio)
-              ..setFloat(1, image.height.toDouble() / devicePixelRatio)
-              ..setFloat(2, time)
-              ..setImageSampler(0, image);
-
-            canvas
-              ..save()
-              ..drawRect(
-                Offset.zero & size,
-                Paint()..shader = shader,
-              )
-              ..restore();
-          },
-          child: child!,
-        );
-      },
-      child: const CustomScaffold(
-        colors: <Color>[
-          ThemeColors.secondaryColor,
-          ThemeColors.primaryColor,
-        ],
-        child: SizedBox(
-          height: double.infinity,
-          width: double.infinity,
-        ),
-      ),
+      child: const Water(),
     );
   }
 }
@@ -208,31 +87,30 @@ class _SnowState extends State<Snow> {
 class Water extends StatefulWidget {
   const Water({super.key});
 
-  static PageRoute<void> route() {
-    return MaterialPageRoute<void>(
-      builder: (_) => const Water(),
-    );
-  }
-
   @override
   State<Water> createState() => _WaterState();
 }
 
 class _WaterState extends State<Water> {
-  double seaHeight = 0.6;
-
-  double time = 0;
-
   Timer? timer;
+  double time = 0;
+  double rotation = 0;
+  double seaHeight = 0.5;
+  double seaSpeed = 2.0; // Added
+  double seaChoppy = 3.0; // Added
+
+  bool isTouching = false;
 
   @override
   void initState() {
     super.initState();
 
     timer = Timer.periodic(const Duration(milliseconds: 16), (Timer timer) {
-      setState(() {
-        time += 0.016;
-      });
+      if (!isTouching) {
+        setState(() {
+          time += 0.015;
+        });
+      }
     });
   }
 
@@ -242,43 +120,194 @@ class _WaterState extends State<Water> {
     super.dispose();
   }
 
+  void increaseSeaHeight() {
+    setState(() {
+      seaHeight += 0.1;
+      if (seaHeight > 1.0) {
+        seaHeight = 1.0;
+      }
+    });
+  }
+
+  void decreaseSeaHeight() {
+    setState(() {
+      seaHeight -= 0.1;
+      if (seaHeight < 0.1) {
+        seaHeight = 0.1;
+      }
+    });
+  }
+
+  void increaseSeaSpeed() {
+    setState(() {
+      seaSpeed += 0.25;
+    });
+  }
+
+  void decreaseSeaSpeed() {
+    setState(() {
+      seaSpeed -= 0.25;
+      if (seaSpeed < 0.0) {
+        seaSpeed = 0.0;
+      }
+    });
+  }
+
+  void increaseSeaChoppy() {
+    setState(() {
+      seaChoppy += 0.25;
+    });
+  }
+
+  void decreaseSeaChoppy() {
+    setState(() {
+      seaChoppy -= 0.25;
+      if (seaChoppy < 0.0) {
+        seaChoppy = 0.0;
+      }
+    });
+  }
+
+  void handlePanUpdate(DragUpdateDetails details) {
+    setState(() {
+      rotation += details.delta.dx * 0.01;
+      isTouching = true;
+    });
+  }
+
+  void handlePanEnd(DragEndDetails details) {
+    setState(() {
+      isTouching = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ShaderBuilder(
-      assetKey: Shaders.shadersWater,
-      (BuildContext context, ui.FragmentShader shader, Widget? child) {
-        return AnimatedSampler(
-          (ui.Image image, ui.Size size, ui.Canvas canvas) {
-            final double devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
-            shader
-              ..setFloat(0, image.width.toDouble() / devicePixelRatio)
-              ..setFloat(1, image.height.toDouble() / devicePixelRatio)
-              ..setFloat(2, time)
-              ..setFloat(3, seaHeight.clamp(0.0, 1.0));
-
-            canvas
-              ..save()
-              ..translate(size.width, size.height)
-              ..rotate(180 * degrees2Radians)
-              ..drawRect(
-                Offset.zero & size,
-                Paint()..shader = shader,
-              )
-              ..restore();
-          },
-          child: child!,
-        );
-      },
-      child: const CustomScaffold(
-        colors: <Color>[
-          ThemeColors.secondaryColor,
-          ThemeColors.primaryColor,
-        ],
-        child: SizedBox(
-          height: double.infinity,
-          width: double.infinity,
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      children: <Widget>[
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            const Spacer(),
+            ElevatedButton(
+              onPressed: decreaseSeaHeight,
+              child: const Text('-'),
+            ),
+            SizedBox(
+              width: 200,
+              child: Center(
+                child: Text(
+                  'Sea Height: ${seaHeight.toStringAsFixed(2)}',
+                  style: const TextStyle(color: Colors.black),
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: increaseSeaHeight,
+              child: const Text('+'),
+            ),
+            const Spacer(),
+          ],
         ),
-      ),
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            const Spacer(),
+            ElevatedButton(
+              onPressed: decreaseSeaSpeed,
+              child: const Text('-'),
+            ),
+            SizedBox(
+              width: 200,
+              child: Center(
+                child: Text(
+                  'Sea Speed: ${seaSpeed.toStringAsFixed(2)}',
+                  style: const TextStyle(color: Colors.black),
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: increaseSeaSpeed,
+              child: const Text('+'),
+            ),
+            const Spacer(),
+          ],
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            const Spacer(),
+            ElevatedButton(
+              onPressed: decreaseSeaChoppy,
+              child: const Text('-'),
+            ),
+            SizedBox(
+              width: 200,
+              child: Center(
+                child: Text(
+                  'Sea Choppy: ${seaChoppy.toStringAsFixed(2)}',
+                  style: const TextStyle(color: Colors.black),
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: increaseSeaChoppy,
+              child: const Text('+'),
+            ),
+            const Spacer(),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Expanded(
+          child: GestureDetector(
+            onPanUpdate: handlePanUpdate,
+            onPanEnd: handlePanEnd,
+            child: ShaderBuilder(
+              assetKey: Shaders.shadersWater,
+              (BuildContext context, ui.FragmentShader shader, Widget? child) {
+                return AnimatedSampler(
+                  (ui.Image image, ui.Size size, ui.Canvas canvas) {
+                    final double devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
+                    shader
+                      ..setFloat(0, image.width.toDouble() / devicePixelRatio)
+                      ..setFloat(1, image.height.toDouble() / devicePixelRatio)
+                      ..setFloat(2, time)
+                      ..setFloat(3, rotation)
+                      ..setFloat(4, seaHeight.clamp(0.0, 1.0))
+                      ..setFloat(5, seaSpeed)
+                      ..setFloat(6, seaChoppy);
+
+                    canvas
+                      ..save()
+                      ..translate(size.width, size.height)
+                      ..rotate(180 * degrees2Radians)
+                      ..drawRect(
+                        Offset.zero & size,
+                        Paint()..shader = shader,
+                      )
+                      ..restore();
+                  },
+                  child: child!,
+                );
+              },
+              child: const CustomScaffold(
+                colors: <Color>[
+                  ThemeColors.secondaryColor,
+                  ThemeColors.primaryColor,
+                ],
+                child: SizedBox(
+                  height: double.infinity,
+                  width: double.infinity,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
