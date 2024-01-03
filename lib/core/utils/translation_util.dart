@@ -58,10 +58,23 @@ class TranslationUtil extends Translations {
         "tr": <String, String>{
           "shader.tab.title": "Su Simülasyon Gölgendiricisi",
           "view.tab.title": "Manzara",
+          "shader.tab.sea.height": "Deniz Yüksekliği",
+          "shader.tab.sea.speed": "Deniz Hızı",
+          "shader.tab.sea.choppy": "Deniz Dalga Düzeyi",
         },
         "en": <String, String>{
           "shader.tab.title": "Water Simulation Shader",
           "view.tab.title": "View",
+          "shader.tab.sea.height": "Sea Height",
+          "shader.tab.sea.speed": "Sea Speed",
+          "shader.tab.sea.choppy": "Sea Choppy",
+        },
+        "fr": <String, String>{
+          "shader.tab.title": "L'ombrage de la simulation de l'eau",
+          "view.tab.title": "Vue",
+          "shader.tab.sea.height": "Hauteur de la mer",
+          "shader.tab.sea.speed": "Vitesse de la mer",
+          "shader.tab.sea.choppy": "Mer agitée",
         },
       };
 }

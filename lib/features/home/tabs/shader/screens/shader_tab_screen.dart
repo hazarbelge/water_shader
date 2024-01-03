@@ -183,128 +183,138 @@ class _WaterState extends State<Water> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.max,
+    return Stack(
       children: <Widget>[
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            const Spacer(),
-            ElevatedButton(
-              onPressed: decreaseSeaHeight,
-              child: const Text('-'),
-            ),
-            SizedBox(
-              width: 200,
-              child: Center(
-                child: Text(
-                  'Sea Height: ${seaHeight.toStringAsFixed(2)}',
-                  style: const TextStyle(color: Colors.black),
-                ),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: increaseSeaHeight,
-              child: const Text('+'),
-            ),
-            const Spacer(),
-          ],
-        ),
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            const Spacer(),
-            ElevatedButton(
-              onPressed: decreaseSeaSpeed,
-              child: const Text('-'),
-            ),
-            SizedBox(
-              width: 200,
-              child: Center(
-                child: Text(
-                  'Sea Speed: ${seaSpeed.toStringAsFixed(2)}',
-                  style: const TextStyle(color: Colors.black),
-                ),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: increaseSeaSpeed,
-              child: const Text('+'),
-            ),
-            const Spacer(),
-          ],
-        ),
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            const Spacer(),
-            ElevatedButton(
-              onPressed: decreaseSeaChoppy,
-              child: const Text('-'),
-            ),
-            SizedBox(
-              width: 200,
-              child: Center(
-                child: Text(
-                  'Sea Choppy: ${seaChoppy.toStringAsFixed(2)}',
-                  style: const TextStyle(color: Colors.black),
-                ),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: increaseSeaChoppy,
-              child: const Text('+'),
-            ),
-            const Spacer(),
-          ],
-        ),
-        const SizedBox(height: 10),
-        Expanded(
-          child: GestureDetector(
-            onPanUpdate: handlePanUpdate,
-            onPanEnd: handlePanEnd,
-            child: ShaderBuilder(
-              assetKey: Shaders.shadersWater,
-              (BuildContext context, ui.FragmentShader shader, Widget? child) {
-                return AnimatedSampler(
-                  (ui.Image image, ui.Size size, ui.Canvas canvas) {
-                    final double devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
-                    shader
-                      ..setFloat(0, image.width.toDouble() / devicePixelRatio)
-                      ..setFloat(1, image.height.toDouble() / devicePixelRatio)
-                      ..setFloat(2, time)
-                      ..setFloat(3, rotation)
-                      ..setFloat(4, seaHeight.clamp(0.0, 1.0))
-                      ..setFloat(5, seaSpeed)
-                      ..setFloat(6, seaChoppy);
+        GestureDetector(
+          onPanUpdate: handlePanUpdate,
+          onPanEnd: handlePanEnd,
+          child: ShaderBuilder(
+            assetKey: Shaders.shadersWater,
+            (BuildContext context, ui.FragmentShader shader, Widget? child) {
+              return AnimatedSampler(
+                (ui.Image image, ui.Size size, ui.Canvas canvas) {
+                  final double devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
+                  shader
+                    ..setFloat(0, image.width.toDouble() / devicePixelRatio)
+                    ..setFloat(1, image.height.toDouble() / devicePixelRatio)
+                    ..setFloat(2, time)
+                    ..setFloat(3, rotation)
+                    ..setFloat(4, seaHeight.clamp(0.0, 1.0))
+                    ..setFloat(5, seaSpeed)
+                    ..setFloat(6, seaChoppy);
 
-                    canvas
-                      ..save()
-                      ..translate(size.width, size.height)
-                      ..rotate(180 * degrees2Radians)
-                      ..drawRect(
-                        Offset.zero & size,
-                        Paint()..shader = shader,
-                      )
-                      ..restore();
-                  },
-                  child: child!,
-                );
-              },
-              child: const CustomScaffold(
-                colors: <Color>[
-                  ThemeColors.secondaryColor,
-                  ThemeColors.primaryColor,
-                ],
-                child: SizedBox(
-                  height: double.infinity,
-                  width: double.infinity,
-                ),
+                  canvas
+                    ..save()
+                    ..translate(size.width, size.height)
+                    ..rotate(180 * degrees2Radians)
+                    ..drawRect(
+                      Offset.zero & size,
+                      Paint()..shader = shader,
+                    )
+                    ..restore();
+                },
+                child: child!,
+              );
+            },
+            child: const CustomScaffold(
+              colors: <Color>[
+                ThemeColors.secondaryColor,
+                ThemeColors.primaryColor,
+              ],
+              child: SizedBox(
+                height: double.infinity,
+                width: double.infinity,
               ),
             ),
+          ),
+        ),
+        Container(
+          height: 180,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.4),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  const Spacer(),
+                  ElevatedButton(
+                    onPressed: decreaseSeaHeight,
+                    child: const Text('-', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),
+                  ),
+                  SizedBox(
+                    width: 220,
+                    child: Center(
+                      child: Text(
+                        '${"shader.tab.sea.height".tr}: ${seaHeight.toStringAsFixed(2)}',
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: increaseSeaHeight,
+                    child: const Text('+', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),
+                  ),
+                  const Spacer(),
+                ],
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  const Spacer(),
+                  ElevatedButton(
+                    onPressed: decreaseSeaSpeed,
+                    child: const Text('-', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),
+                  ),
+                  SizedBox(
+                    width: 220,
+                    child: Center(
+                      child: Text(
+                        '${"shader.tab.sea.speed".tr}: ${seaSpeed.toStringAsFixed(2)}',
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: increaseSeaSpeed,
+                    child: const Text('+', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),
+                  ),
+                  const Spacer(),
+                ],
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  const Spacer(),
+                  ElevatedButton(
+                    onPressed: decreaseSeaChoppy,
+                    child: const Text('-', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),
+                  ),
+                  SizedBox(
+                    width: 220,
+                    child: Center(
+                      child: Text(
+                        '${"shader.tab.sea.choppy".tr}: ${seaChoppy.toStringAsFixed(2)}',
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: increaseSeaChoppy,
+                    child: const Text('+', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),
+                  ),
+                  const Spacer(),
+                ],
+              ),
+            ],
           ),
         ),
       ],
